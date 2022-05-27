@@ -1,5 +1,9 @@
-const router = require('express').Router();
-// const bcrypt = require("bcryptjs")
+const router = require('express').Router()
+
+const bcrypt = require("bcryptjs")
+const { JWT_SECRET } = require("./secrets")
+const jwt = require("jsonwebtoken")
+
 
 router.post('/register', (req, res) => {
   res.end('implement register, please!');
@@ -29,6 +33,13 @@ router.post('/register', (req, res) => {
     4- On FAILED registration due to the `username` being taken,
       the response body should include a string exactly as follows: "username taken".
   */
+ const { username, password } = req.body
+ const hash = bcrypt.hashSync(password, 8)
+  
+ Users.add({ username, password: hash })
+ .then(newUser => {
+   res.status(201).json(newUser)
+ })
 });
 
 router.post('/login', (req, res) => {
