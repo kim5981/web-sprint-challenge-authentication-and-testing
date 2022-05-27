@@ -1,17 +1,17 @@
 const router = require('express').Router()
 
 const Users = require("../users/users-model")
+
+const bcrypt = require("bcryptjs")
+const { JWT_SECRET } = require("./secrets")
+const jwt = require("jsonwebtoken")
+
 const {
   usernameUnique,
   registrationReqs,
   noMissingReqBody,
 } = require("../middleware/auth-middleware")
 
-const bcrypt = require("bcryptjs")
-const { JWT_SECRET } = require("./secrets")
-const jwt = require("jsonwebtoken")
-
-//token 
 
 function makeToken(user){
   const payload={
@@ -69,18 +69,15 @@ router.post('/login',
 noMissingReqBody,
 (req, res, next) => {
 
-  const { password } = req.body
-  const { user } = req.user 
-  const credentials = bcrypt.compareSync( password, user.password )
-  const token = makeToken(user)
+  const token = makeToken(req.user)
   
-  credentials
+  bcrypt.compareSync( req.body.password, req.user.password )
   ? res.status(200).json({
-    message: `welcome, ${user.username}`,
+    message: `welcome, ${req.user.username}`,
         token
   })
   : next()
-  
+
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
