@@ -35,4 +35,5 @@ describe("POST /register", () => {
     expect(response.body).toBe("please provide a username and password")
   })
 
+  test("cannot register with an existing username")
 })

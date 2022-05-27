@@ -10,6 +10,19 @@ const bcrypt = require("bcryptjs")
 const { JWT_SECRET } = require("./secrets")
 const jwt = require("jsonwebtoken")
 
+//token 
+
+function token(user){
+  const payload={
+    subject: user.id,
+    username: user.username,
+  }
+  const options = {
+    expiresIn: "1d"
+  }
+  return jwt.sign(payload, JWT_SECRET, options)
+}
+
 
 router.post('/register', registrationReqs, usernameUnique, (req, res, next) => {
   const { username, password } = req.body

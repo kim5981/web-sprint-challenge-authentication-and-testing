@@ -8,7 +8,7 @@ const Users = require("../users/users-model")
 const usernameUnique = async (req, res, next) => {
  try{
     const [user] = await Users.findBy({ username: req.body.username })
-    !user 
+    user 
     ? next({ status: 400, message: "username taken"})
     : req.user = user 
     next()
