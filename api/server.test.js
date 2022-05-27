@@ -61,8 +61,6 @@ describe("POST /api/auth/login", () => {
     expect(response.status).toBe(400)
   })
 
-  test.todo("proper response due to missing username or password")
-
   test("checks missing username or password from request body", async () => {
     let response = await supertest(server).post("/api/auth/login")
     .send({ username: "foo" })
@@ -72,7 +70,13 @@ describe("POST /api/auth/login", () => {
     expect(response.body).toBe("username and password required")
   })
 
-  test.todo("checks nonexistent username or invalid password")
+  test("checks nonexistent username or invalid password", async () => {
+    let response = await supertest(server).post("/api/auth/login")
+    .send({ username: "null", password: "123" })
+    let user = await Users.getByUsername({ username: "null"})
+    expect(user).not.toBeDefined()
+    expect(response.body).toBe("invalid credentials")
+  })
 
   test("responds with message and token on successful login", async () => {
     // register

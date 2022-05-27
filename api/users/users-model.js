@@ -12,6 +12,10 @@ async function findBy(filter){
     return db("users").where(filter)
 }
 
+function getByUsername (username) {
+    return db("users").where({username}).first()
+}
+
 async function add(user) {
     const [id] = await db("users").insert(user)
     return getById(id)
@@ -21,5 +25,6 @@ module.exports = {
     getAll,
     getById,
     add,
-    findBy
+    findBy, 
+    getByUsername
 }
