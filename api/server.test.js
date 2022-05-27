@@ -28,12 +28,19 @@ afterAll(async () => {
 describe("POST /register", () => {
 
   test("check username and password upon registration", async () => {
-    // send a GET request with an unhashed password or missing password
     let response = await supertest(server).post("/api/auth/register")
     .send({})
     expect(response.status).toBe(400)
     expect(response.body).toBe("please provide a username and password")
   })
 
-  test("cannot register with an existing username")
+  test("cannot register with an existing username", async () => {
+    let response = await supertest(server).post("/api/auth/register")
+    .send({ username: "foo", password: "123" })
+    expect(response).toBeDefined()
+    response = await supertest(server).post("/api/auth/register")
+    .send({ username: "foo", password: "123" })
+    expect(response.status).toBe(400)
+    expect(response.body).toBe("username taken")
+  })
 })
