@@ -13,7 +13,7 @@ server.use(helmet());
 server.use(cors());
 server.use(express.json());
 
-server.use('/api/auth', authRouter);
+server.use('/api/auth', authRouter); // register route 
 server.use('/api/jokes', restricted, jokesRouter); // only logged-in users should have access!
 
 server.use((err, req, res, next) => { // eslint-disable-line

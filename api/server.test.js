@@ -9,7 +9,7 @@ test("sanity", () => {
 
 beforeAll(async () => {
   await db.migrate.rollback()
-  await db.migrate.latest
+  await db.migrate.latest()
 })
 
 beforeEach(async () => {
@@ -20,16 +20,18 @@ beforeEach(async () => {
   ])
 })
 
-afterAll( async () => {
+afterAll(async () => {
   await db.destroy()
 })
 
 
 describe("POST /register", () => {
 
-  test("username and password are provided", async () => {
-    let response = await supertest(server).get("/api/auth/register")
-    .send({ password: "something" })
+  test("check username and password upon registration", async () => {
+    // send a GET request with an unhashed password or missing password
+    let response = await supertest(server).post("/api/auth/register")
+    .send({})
+    expect(response.status).toBe(400)
     expect(response.body).toBe("please provide a username and password")
   })
 
