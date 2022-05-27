@@ -43,4 +43,12 @@ describe("POST /register", () => {
     expect(response.status).toBe(400)
     expect(response.body).toBe("username taken")
   })
+
+  test("user info returned upon successful registration", async () => {
+    let response = await supertest(server).post("/api/auth/register")
+    .send({ username: "foo", password: "123" })
+    expect(response).toBeDefined()
+    expect(response.status).toBe(201)
+    expect(response.body).toHaveProperty("username", "foo")
+  })
 })
