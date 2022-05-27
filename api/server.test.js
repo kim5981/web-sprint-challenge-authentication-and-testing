@@ -25,7 +25,7 @@ afterAll(async () => {
 })
 
 
-describe("POST /register", () => {
+describe("POST /api/auth/register", () => {
 
   test("check username and password upon registration", async () => {
     let response = await supertest(server).post("/api/auth/register")
@@ -51,4 +51,21 @@ describe("POST /register", () => {
     expect(response.status).toBe(201)
     expect(response.body).toHaveProperty("username", "foo")
   })
+})
+
+describe("POST /api/auth/login", () => {
+  test("checks username and password are provided in login", async () => {
+    let response = await supertest(server).post("/api/auth/login")
+    .send({ username: "foo", password: "123" })
+    expect(response).toBeDefined()
+  })
+
+  test.todo("proper response due to missing username or password")
+
+  test.todo("checks missing username or password from request body")
+
+  test.todo("checks nonexistent username or invalid password")
+
+  test.todo("responds with message and token on successful login")
+  
 })
