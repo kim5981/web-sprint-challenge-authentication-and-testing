@@ -22,7 +22,7 @@ const registrationReqs = async (req, res, next) => {
    try{
       const { username, password } = req.body
       !username || !username.trim() || !password || !password.trim()
-      ? res.status(400).json("please provide a username and password") 
+      ? res.status(400).json("username and password required") 
       : next()
    } catch(err){
       next(err)

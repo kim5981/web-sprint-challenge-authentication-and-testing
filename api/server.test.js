@@ -31,7 +31,7 @@ describe("POST /api/auth/register", () => {
     let response = await supertest(server).post("/api/auth/register")
     .send({})
     expect(response.status).toBe(400)
-    expect(response.body).toBe("please provide a username and password")
+    expect(response.body).toBe("username and password required")
   })
 
   test("cannot register with an existing username", async () => {
