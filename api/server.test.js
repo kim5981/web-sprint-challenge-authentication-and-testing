@@ -70,6 +70,17 @@ describe("POST /api/auth/login", () => {
 
   test.todo("checks nonexistent username or invalid password")
 
-  test.todo("responds with message and token on successful login")
+  test("responds with message and token on successful login", async () => {
+    // register
+    let response = await supertest(server).post("/api/auth/register")
+    .send({ username: "foo", password: "123" })
+    //login
+    response = await supertest(server).post("/api/auth/login")
+    .send({ username: "foo", password: "123" })
+    expect(response).toBe(200)
+    expect(response.body).toHaveProperty("token")
+    expect(response.body).toHaveProperty("message", 'welcome, foo')
+  })
+
   
 })
