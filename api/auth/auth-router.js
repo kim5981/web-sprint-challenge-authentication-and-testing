@@ -15,8 +15,8 @@ const {
 
 function makeToken(user){
   const payload={
-    subject: user.id,
-    username: user.username,
+    subject: user.id, // req.user.id
+    username: user.username, // req.user.username
   }
   const options = {
     expiresIn: "1d"
@@ -67,16 +67,21 @@ usernameUnique,
 
 router.post('/login',
 noMissingReqBody,
-(req, res, next) => {
+(req, res) => {
 
-  const token = makeToken(req.user)
   
-  bcrypt.compareSync( req.body.password, req.user.password )
-  ? res.status(200).json({
-    message: `welcome, ${req.user.username}`,
-        token
-  })
-  : next()
+  const token = makeToken(req.user)
+  const validCredentials = bcrypt.compareSync(req.body.password, req.user.password)
+
+  if(validCredentials){
+    req.session.user = req.user
+    res.status(200).json({
+      message: `welcome, ${req.user.username}`,
+      token
+    })
+  } else {
+    res.status(400).json("invalid credentials")
+  }
 
   /*
     IMPLEMENT

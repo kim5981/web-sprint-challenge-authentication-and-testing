@@ -37,6 +37,7 @@ const noMissingReqBody = async (req, res, next) => {
 
 
 
+
 module.exports = {
     usernameUnique,
     registrationReqs,
