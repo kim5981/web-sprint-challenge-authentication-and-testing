@@ -10,14 +10,15 @@ const {
   usernameUnique,
   registrationReqs,
   noMissingReqBody,
-  checkUsernameExists
+  checkUsernameExists,
+  checkPassword
 } = require("../middleware/auth-middleware")
 
 
 function makeToken(user){
   const payload={
-    subject: user.id, // req.user.id
-    username: user.username, // req.user.username
+    subject: user.id,
+    username: user.username,
   }
   const options = {
     expiresIn: "1d"
@@ -30,6 +31,7 @@ router.post('/register',
 registrationReqs, 
 usernameUnique,
 (req, res, next) => {
+
   const { username, password } = req.body
   const hash = bcrypt.hashSync(password, 8)
    
@@ -69,6 +71,7 @@ usernameUnique,
 router.post('/login',
 noMissingReqBody,
 checkUsernameExists,
+checkPassword,
 (req, res, next) => {
 
   

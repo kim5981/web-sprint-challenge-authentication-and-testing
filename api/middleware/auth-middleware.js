@@ -1,5 +1,6 @@
 const { JWT_SECRET } = require("../server")
 const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs")
 
 const Users = require("../users/users-model")
 
@@ -48,11 +49,21 @@ const checkUsernameExists = async (req, res, next) => {
    }
 } 
 
+const checkPassword = async (req, res) => {
+   const credentials = req.body
+   const user = await Users.getByUsername({ username: req.body.username })
+
+   if (!user || !bcrypt.compareSync((credentials.password, user.password))){
+      return res.status(401).json("invalid credentials")
+   }
+}
+
 
 
 module.exports = {
     usernameUnique,
     registrationReqs,
     noMissingReqBody,
-    checkUsernameExists
+    checkUsernameExists,
+    checkPassword
 }
