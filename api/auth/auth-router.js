@@ -10,6 +10,7 @@ const {
   usernameUnique,
   registrationReqs,
   noMissingReqBody,
+  checkUsernameExists
 } = require("../middleware/auth-middleware")
 
 
@@ -67,7 +68,8 @@ usernameUnique,
 
 router.post('/login',
 noMissingReqBody,
-(req, res) => {
+checkUsernameExists,
+(req, res, next) => {
 
   
   const token = makeToken(req.user)
@@ -80,7 +82,7 @@ noMissingReqBody,
       token
     })
   } else {
-    res.status(400).json("invalid credentials")
+    next()
   }
 
   /*

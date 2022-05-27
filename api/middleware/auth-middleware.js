@@ -35,6 +35,18 @@ const noMissingReqBody = async (req, res, next) => {
    : next()
 }
 
+const checkUsernameExists = async (req, res, next) => {
+   try{
+      const user = Users.getByUsername({ username: req.body.username })
+      if(user){
+         next()
+      } else {
+         res.status(400).json("invalid credentials")
+      }
+   } catch(err){
+      next(err)
+   }
+} 
 
 
 
@@ -42,4 +54,5 @@ module.exports = {
     usernameUnique,
     registrationReqs,
     noMissingReqBody,
+    checkUsernameExists
 }
