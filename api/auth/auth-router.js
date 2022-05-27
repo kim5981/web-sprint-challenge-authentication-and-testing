@@ -61,8 +61,8 @@ router.post('/register', registrationReqs, usernameUnique, (req, res, next) => {
 
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', (req, res, next) => {
+  next()
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
