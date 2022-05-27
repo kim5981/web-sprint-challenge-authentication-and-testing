@@ -28,9 +28,17 @@ const registrationReqs = async (req, res, next) => {
    }
 }
 
+const noMissingReqBody = async (req, res, next) => {
+   const { username , password } = req.body
+   !username || !username.trim() || !password || !password.trim()
+   ? res.status(400).json("username and password required")
+   : next()
+}
+
 
 
 module.exports = {
     usernameUnique,
-    registrationReqs
+    registrationReqs,
+    noMissingReqBody,
 }
