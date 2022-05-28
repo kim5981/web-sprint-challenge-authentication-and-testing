@@ -25,6 +25,12 @@ function makeToken(user){
   return jwt.sign(payload, JWT_SECRET, options)
 }
 
+//for temporary debugging 
+router.get("/", (req, res, next) => {
+  Users.getAll()
+  .then(users => res.json(users))
+  .catch(next)
+})
 
 router.post('/register',
 registrationReqs, 
@@ -68,14 +74,15 @@ usernameUnique,
 });
 
 router.post('/login', checkReqBody, checkUsernameExists, (req, res, next) => {
-  const user = req.user
   const { password } = req.body
   const token = makeToken(req.user)
-  const passwordMatch = bcrypt.compareSync(password, user.password)
+  const passwordMatch = bcrypt.compareSync(password, req.user.password)
 
   if(passwordMatch){
+    // stores cookie on session 
+    req.session.user = req.user
     res.status(200).json({
-      message: `welcome, ${user.username}`,
+      message: `welcome, ${req.user.username}`,
       token
     })
   } else {
