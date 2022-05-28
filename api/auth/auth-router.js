@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken")
 const {
   usernameUnique,
   registrationReqs,
-  noMissingReqBody,
+  checkReqBody,
   checkUsernameExists,
   checkPassword
 } = require("../middleware/auth-middleware")
@@ -68,17 +68,12 @@ usernameUnique,
 
 });
 
-router.post('/login',
-noMissingReqBody,
-checkUsernameExists,
-checkPassword,
-(req, res, next) => {
+router.post('/login', checkReqBody, checkUsernameExists, (req, res, next) => {
 
-  
   const token = makeToken(req.user)
-  const validCredentials = bcrypt.compareSync(req.body.password, req.user.password)
+  const passwordMatch = bcrypt.compareSync(req.body.password, req.user.password)
 
-  if(validCredentials){
+  if(passwordMatch){
     req.session.user = req.user
     res.status(200).json({
       message: `welcome, ${req.user.username}`,

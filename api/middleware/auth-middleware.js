@@ -29,7 +29,7 @@ const registrationReqs = async (req, res, next) => {
    }
 }
 
-const noMissingReqBody = async (req, res, next) => {
+const checkReqBody = async (req, res, next) => {
    const { username , password } = req.body
    !username || !username.trim() || !password || !password.trim()
    ? res.status(400).json("username and password required")
@@ -39,7 +39,7 @@ const noMissingReqBody = async (req, res, next) => {
 const checkUsernameExists = async (req, res, next) => {
    try{
       const user = Users.getByUsername({ username: req.body.username })
-      if(user){
+      if(!user){
          next()
       } else {
          res.status(400).json("invalid credentials")
@@ -49,13 +49,12 @@ const checkUsernameExists = async (req, res, next) => {
    }
 } 
 
-const checkPassword = async (req, res) => {
+const checkPassword = async (req, res, next) => {
    const credentials = req.body
    const user = await Users.getByUsername({ username: req.body.username })
-
-   if (!user || !bcrypt.compareSync((credentials.password, user.password))){
-      return res.status(401).json("invalid credentials")
-   }
+   !bcrypt.compareSync((credentials.password, user.password))
+   ? res.status(401).json("invalid credentials")
+   : next()
 }
 
 
@@ -63,7 +62,7 @@ const checkPassword = async (req, res) => {
 module.exports = {
     usernameUnique,
     registrationReqs,
-    noMissingReqBody,
+    checkReqBody,
     checkUsernameExists,
     checkPassword
 }
