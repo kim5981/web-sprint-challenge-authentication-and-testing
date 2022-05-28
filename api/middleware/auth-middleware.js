@@ -1,48 +1,30 @@
-const { JWT_SECRET } = require("../server")
-const jwt = require("jsonwebtoken")
-const bcrypt = require("bcryptjs")
-
 const Users = require("../users/users-model")
 
 
-
 const usernameUnique = async (req, res, next) => {
- try{
-    const [user] = await Users.findBy({ username: req.body.username })
-    user 
-    ? res.status(400).json("username taken") 
-    : next()
- }catch(err){
-    next(err)
- }
-}
+const { username } = req.body
+const user = await Users.getByUsername(username)
 
-const registrationReqs = async (req, res, next) => {
-   try{
-      const { username, password } = req.body
-      !username || !username.trim() || !password || !password.trim()
-      ? res.status(400).json("username and password required") 
-      : next()
-   } catch(err){
-      next(err)
-   }
+user
+? res.status(400).json("username taken")
+: next()
 }
 
 const checkReqBody = async (req, res, next) => {
    const { username , password } = req.body
-   !username || !username.trim() || !password || !password.trim()
+   !username || !password 
    ? res.status(400).json("username and password required")
    : next()
 }
 
-const checkUsernameExists = async (req, res, next) => {
-   try{
-      const user = Users.getByUsername({ username: req.body.username })
-      !user
-      ? req.user = user
-      : res.status(400).json("invalid credentials")
-   } catch(err){
-      next(err)
+const usernameInDB = async (req, res, next) => {
+   const { username } = req.body
+   const user = await Users.getByUsername(username)
+   if(user){
+      req.user = user
+      next()
+   } else {
+      res.status(400).json("invalid credentials")
    }
 } 
 
@@ -58,8 +40,7 @@ const checkPassword = async (req, res, next) => {
 
 module.exports = {
     usernameUnique,
-    registrationReqs,
     checkReqBody,
-    checkUsernameExists,
+    usernameInDB,
     checkPassword
 }

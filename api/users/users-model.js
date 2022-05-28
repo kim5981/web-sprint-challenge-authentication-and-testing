@@ -21,10 +21,16 @@ async function add(user) {
     return getById(id)
 }
 
+async function deleteById(id){
+    await db("users").where("id", id).del()
+    return getById(id) 
+}
+
 module.exports = {
     getAll,
     getById,
     add,
     findBy, 
-    getByUsername
+    getByUsername,
+    deleteById
 }

@@ -1,5 +1,5 @@
 const db = require("../data/dbConfig")
-const Users = require("./users/users-model")
+
 const server = require("./server")
 const supertest = require("supertest")
  
@@ -42,12 +42,11 @@ describe("POST /api/auth/register", () => {
   })
  
   test("if username is taken, returns 'username taken'", async () => {
+    await supertest(server).post("/api/auth/register")
+    .send({ username: "foo", password: "123" })
+    
     let response = await supertest(server).post("/api/auth/register")
     .send({ username: "foo", password: "123" })
-    expect(response).toBeDefined()
-    response = await supertest(server).post("/api/auth/register")
-    .send({ username: "foo", password: "123" })
-    expect(response.status).toBe(400)
     expect(response.body).toBe("username taken")
     users()
     expect(users).toHaveLength(0)
@@ -111,7 +110,7 @@ describe("GET /api/jokes", () => {
     await supertest(server).post("/api/auth/register").send({ username: "foo", password: "123" })
     //login
     let res = await supertest(server).post("/api/auth/login").send({ username: "foo", password: "123" })
-    let jokes = await (await supertest(server).get("/api/jokes")).set("Authorization", res.body)
+    let jokes = supertest(server).get("/api/jokes").set("Authorization", res.body)
     expect(jokes.body).toBeInstanceOf(Array)
     expect(jokes.body).toHaveLength(3)
     expect(jokes.status).toBe(200)

@@ -3,48 +3,34 @@ const router = require('express').Router()
 const Users = require("../users/users-model")
 
 const bcrypt = require("bcryptjs")
-const { JWT_SECRET } = require("./secrets")
+const { JWT_SECRET } = require("./secrets.js")
 const jwt = require("jsonwebtoken")
 
 const {
   usernameUnique,
-  registrationReqs,
   checkReqBody,
-  checkUsernameExists,
+  usernameInDB,
 } = require("../middleware/auth-middleware")
 
 
-function makeToken(user){
-  const payload={
-    subject: user.id,
-    username: user.username,
-  }
-  const options = {
-    expiresIn: "1d"
-  }
-  return jwt.sign(payload, JWT_SECRET, options)
-}
-
-//for temporary debugging 
+//!for temporary debugging 
 router.get("/", (req, res, next) => {
   Users.getAll()
   .then(users => res.json(users))
   .catch(next)
 })
 
-router.post('/register',
-registrationReqs, 
-usernameUnique,
-(req, res, next) => {
+
+router.post('/register', checkReqBody, usernameUnique, async (req, res, next) => {
 
   const { username, password } = req.body
   const hash = bcrypt.hashSync(password, 8)
-   
-  Users.add({ username, password: hash })
-  .then(newUser => {
-    res.status(201).json(newUser)
-  })
-  .catch(next)
+   try{
+     const newUser = await Users.add({ username, password: hash })
+     res.status(201).json(newUser)
+    } catch(err){
+      next(err)
+    }
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -73,20 +59,29 @@ usernameUnique,
 
 });
 
-router.post('/login', checkReqBody, checkUsernameExists, (req, res, next) => {
+router.post('/login', checkReqBody, usernameInDB, (req, res, next) => {
+  const user = req.user
   const { password } = req.body
-  const token = makeToken(req.user)
-  const passwordMatch = bcrypt.compareSync(password, req.user.password)
+  const passwordMatch = bcrypt.compareSync(password, user.password)
+
+function makeToken(user){
+  const payload={
+    subject: user.id,
+    username: user.username,
+  }
+  const options = {
+    expiresIn: "1d"
+  }
+  return jwt.sign(payload, JWT_SECRET, options)
+}
 
   if(passwordMatch){
-    // stores cookie on session 
-    req.session.user = req.user
     res.status(200).json({
       message: `welcome, ${req.user.username}`,
-      token
+      token: makeToken(user)
     })
   } else {
-    next()
+    res.status(401).json("invalid credentials")
   }
 
   /*
