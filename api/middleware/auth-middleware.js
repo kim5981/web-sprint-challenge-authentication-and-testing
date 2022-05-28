@@ -39,11 +39,9 @@ const checkReqBody = async (req, res, next) => {
 const checkUsernameExists = async (req, res, next) => {
    try{
       const user = Users.getByUsername({ username: req.body.username })
-      if(!user){
-         next()
-      } else {
-         res.status(400).json("invalid credentials")
-      }
+      !user
+      ? next()
+      : res.status(400).json("invalid credentials")
    } catch(err){
       next(err)
    }
