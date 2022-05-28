@@ -106,14 +106,26 @@ describe("GET /api/jokes", () => {
   })
  
   test("returns array of jokes upon valid token", async () => {
-    //register
     await supertest(server).post("/api/auth/register").send({ username: "foo", password: "123" })
-    //login
-    let res = await supertest(server).post("/api/auth/login").send({ username: "foo", password: "123" })
-    let jokes = supertest(server).get("/api/jokes").set("Authorization", res.body)
+    
+    const res = await supertest(server).post("/api/auth/login").send({ username: "foo", password: "123" })
+    let jokes = await supertest(server).get("/api/jokes").set("Authorization", res.body)
     expect(jokes.body).toBeInstanceOf(Array)
-    expect(jokes.body).toHaveLength(3)
-    expect(jokes.status).toBe(200)
+    expect(jokes.body).toMatchObject([
+      {
+        "id": "0189hNRf2g",
+        "joke": "I'm tired of following my dreams. I'm just going to ask them where they are going and meet up with them later."
+    },
+    {
+        "id": "08EQZ8EQukb",
+        "joke": "Did you hear about the guy whose whole left side was cut off? He's all right now."  
+
+    },
+    {
+        "id": "08xHQCdx5Ed",             
+        "joke": "Why didn’t the skeleton cross the road? Because he had no guts."     
+    }
+    ])
   })
 })
 
